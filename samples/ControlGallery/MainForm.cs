@@ -53,12 +53,14 @@ namespace ControlGallery
             tree.Items.Add ("TitleBar", ImageLoader.Get ("button.png"));
             tree.Items.Add ("ToolBar", ImageLoader.Get ("button.png"));
             tree.Items.Add ("TreeView", ImageLoader.Get ("button.png"));
+            tree.Items.Add("ColorDialog", ImageLoader.Get("button.png"));
 
             tree.ItemSelected += Tree_ItemSelected;
             Controls.Add (tree);
 
             Text = "Control Gallery";
             Image = ImageLoader.Get ("button.png");
+            this.TitleBar.AllowDoubleClickMaximize = true;
         }
 
         private void Tree_ItemSelected (object? sender, EventArgs<TreeViewItem> e)
@@ -145,6 +147,8 @@ namespace ControlGallery
                     return new ToolBarPanel ();
                 case "TreeView":
                     return new TreeViewPanel ();
+                case "ColorDialog":
+                    return new ColorDialogPanel();
             }
 
             return null;

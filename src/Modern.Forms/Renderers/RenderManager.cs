@@ -38,6 +38,9 @@ namespace Modern.Forms.Renderers
             SetRenderer<TextBox> (new TextBoxRenderer ());
             SetRenderer<ToolBar> (new ToolBarRenderer ());
             SetRenderer<TreeView> (new TreeViewRenderer ());
+            SetRenderer<TrackBar> (new TrackBarRenderer ());
+            SetRenderer<ColorBox> (new ColorBoxRenderer ());
+            SetRenderer<HueSlider> (new HueSliderRenderer ());
         }
 
         /// <summary>

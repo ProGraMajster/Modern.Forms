@@ -37,15 +37,7 @@ namespace Modern.Forms
 
             maximize_button = Controls.AddImplicitControl (new TitleBarButton (TitleBarButton.TitleBarButtonGlyph.Maximize));
             maximize_button.Click += (o, e) => {
-                var form = FindForm ();
-
-                if (form != null) {
-                    form.WindowState = form.WindowState == FormWindowState.Maximized
-                        ? FormWindowState.Normal
-                        : FormWindowState.Maximized;
-
-                    UpdateMaximizeButtonGlyph ();
-                }
+                ToggleMaximizeRestore ();
             };
 
             close_button = Controls.AddImplicitControl (new TitleBarButton (TitleBarButton.TitleBarButtonGlyph.Close));
@@ -70,7 +62,7 @@ namespace Modern.Forms
             set {
                 maximize_button.Visible = value;
                 UpdateMaximizeButtonGlyph ();
-                Invalidate (); // TODO: Shouldn't be necessary, should automatically be triggered
+                Invalidate ();
             }
         }
 
@@ -81,7 +73,7 @@ namespace Modern.Forms
             get => minimize_button.Visible;
             set {
                 minimize_button.Visible = value;
-                Invalidate (); // TODO: Shouldn't be necessary, should automatically be triggered
+                Invalidate ();
             }
         }
 
@@ -107,15 +99,46 @@ namespace Modern.Forms
             }
         }
 
+
+        /// <summary>
+        /// Gets or sets whether double-clicking the title bar toggles maximize/restore.
+        /// </summary>
+        public bool AllowDoubleClickMaximize { get; set; } = true;
+
         /// <inheritdoc/>
         protected override void OnMouseDown (MouseEventArgs e)
         {
             base.OnMouseDown (e);
 
+            if (e.Button != MouseButtons.Left)
+                return;
+
+            if (AllowDoubleClickMaximize && e.Clicks > 1)
+                return;
+
             // We won't get a MouseUp from the system for this, so don't capture the mouse
             Capture = false;
             FindForm ()?.BeginMoveDrag ();
         }
+
+
+        /// <summary>
+        /// Handles double-click on the title bar to toggle maximize/restore.
+        /// </summary>
+        /// <param name="e">The mouse event data.</param>
+        protected override void OnDoubleClick (MouseEventArgs e)
+        {
+            base.OnDoubleClick (e);
+
+            if (e.Button != MouseButtons.Left)
+                return;
+
+            if (!AllowDoubleClickMaximize || !AllowMaximize)
+                return;
+
+            ToggleMaximizeRestore ();
+        }
+
 
         /// <inheritdoc/>
         protected override void OnPaint (PaintEventArgs e)
@@ -147,13 +170,27 @@ namespace Modern.Forms
                 if (show_image != value) {
                     show_image = value;
                     form_image.Visible = value && form_image.Image is not null;
-                    Invalidate (); // TODO: Shouldn't be required
+                    Invalidate ();
                 }
             }
         }
 
         /// <inheritdoc/>
         public override ControlStyle Style { get; } = new ControlStyle (DefaultStyle);
+
+        private void ToggleMaximizeRestore ()
+        {
+            var form = FindForm ();
+
+            if (form == null || !maximize_button.Visible)
+                return;
+
+            form.WindowState = form.WindowState == FormWindowState.Maximized
+                ? FormWindowState.Normal
+                : FormWindowState.Maximized;
+
+            UpdateMaximizeButtonGlyph ();
+        }
 
         private void UpdateMaximizeButtonGlyph ()
         {
