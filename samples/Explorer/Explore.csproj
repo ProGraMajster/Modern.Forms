@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(_TargetFramework)</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ApplicationIcon />
     <OutputType>WinExe</OutputType>
     <StartupObject />

@@ -14,7 +14,7 @@ namespace Modern.Forms
         private readonly TitleBarButton maximize_button;
         private readonly TitleBarButton close_button;
         private readonly PictureBox form_image;
-        
+
         private bool show_image = true;
 
         /// <summary>
@@ -39,8 +39,13 @@ namespace Modern.Forms
             maximize_button.Click += (o, e) => {
                 var form = FindForm ();
 
-                if (form != null)
-                    form.WindowState = form.WindowState == FormWindowState.Maximized ? FormWindowState.Normal : FormWindowState.Maximized;
+                if (form != null) {
+                    form.WindowState = form.WindowState == FormWindowState.Maximized
+                        ? FormWindowState.Normal
+                        : FormWindowState.Maximized;
+
+                    UpdateMaximizeButtonGlyph ();
+                }
             };
 
             close_button = Controls.AddImplicitControl (new TitleBarButton (TitleBarButton.TitleBarButtonGlyph.Close));
@@ -64,6 +69,7 @@ namespace Modern.Forms
             get => maximize_button.Visible;
             set {
                 maximize_button.Visible = value;
+                UpdateMaximizeButtonGlyph ();
                 Invalidate (); // TODO: Shouldn't be necessary, should automatically be triggered
             }
         }
@@ -114,6 +120,8 @@ namespace Modern.Forms
         /// <inheritdoc/>
         protected override void OnPaint (PaintEventArgs e)
         {
+            UpdateMaximizeButtonGlyph ();
+
             base.OnPaint (e);
 
             RenderManager.Render (this, e);
@@ -126,6 +134,8 @@ namespace Modern.Forms
 
             // Keep our form image a square
             form_image.Width = Height;
+
+            UpdateMaximizeButtonGlyph ();
         }
 
         /// <summary>
@@ -136,7 +146,7 @@ namespace Modern.Forms
             set {
                 if (show_image != value) {
                     show_image = value;
-                    form_image.Visible = value && form_image is not null;
+                    form_image.Visible = value && form_image.Image is not null;
                     Invalidate (); // TODO: Shouldn't be required
                 }
             }
@@ -145,12 +155,42 @@ namespace Modern.Forms
         /// <inheritdoc/>
         public override ControlStyle Style { get; } = new ControlStyle (DefaultStyle);
 
+        private void UpdateMaximizeButtonGlyph ()
+        {
+            var form = FindForm ();
+
+            if (form == null || !maximize_button.Visible) {
+                maximize_button.Glyph = TitleBarButton.TitleBarButtonGlyph.Maximize;
+                return;
+            }
+
+            maximize_button.Glyph = form.WindowState == FormWindowState.Maximized
+                ? TitleBarButton.TitleBarButtonGlyph.Restore
+                : TitleBarButton.TitleBarButtonGlyph.Maximize;
+        }
+
         internal class TitleBarButton : Button
         {
             protected const int BUTTON_PADDING = 10;
 
-            private readonly TitleBarButtonGlyph glyph;
+            private TitleBarButtonGlyph glyph;
 
+            /// <summary>
+            /// Gets or sets the glyph displayed by the button.
+            /// </summary>
+            public TitleBarButtonGlyph Glyph {
+                get => glyph;
+                set {
+                    if (glyph != value) {
+                        glyph = value;
+                        Invalidate ();
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the TitleBarButton class.
+            /// </summary>
             public TitleBarButton (TitleBarButtonGlyph glyph)
             {
                 this.glyph = glyph;
@@ -162,6 +202,7 @@ namespace Modern.Forms
                 StyleHover.Border.Width = 0;
             }
 
+            /// <inheritdoc/>
             protected override void OnPaint (PaintEventArgs e)
             {
                 base.OnPaint (e);
@@ -183,14 +224,36 @@ namespace Modern.Forms
                     case TitleBarButtonGlyph.Maximize:
                         ControlPaint.DrawMaximizeGlyph (e, glyph_bounds);
                         break;
+                    case TitleBarButtonGlyph.Restore:
+                        ControlPaint.DrawRestoreGlyph (e, glyph_bounds);
+                        break;
                 }
             }
 
+            /// <summary>
+            /// Specifies which glyph is displayed by the title bar button.
+            /// </summary>
             public enum TitleBarButtonGlyph
             {
+                /// <summary>
+                /// Close glyph.
+                /// </summary>
                 Close,
+
+                /// <summary>
+                /// Minimize glyph.
+                /// </summary>
                 Minimize,
-                Maximize
+
+                /// <summary>
+                /// Maximize glyph.
+                /// </summary>
+                Maximize,
+
+                /// <summary>
+                /// Restore glyph.
+                /// </summary>
+                Restore
             }
         }
     }

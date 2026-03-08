@@ -67,6 +67,9 @@ namespace Modern.Forms
             }
         }
 
+        private bool IsInternalScrollControl (Control c)
+            => ReferenceEquals (c, hscrollbar) || ReferenceEquals (c, vscrollbar) || ReferenceEquals (c, sizegrip);
+
         // Calculates and sets the current canvas size.
         private void CalculateCanvasSize ()
         {
@@ -76,6 +79,9 @@ namespace Modern.Forms
             var extra_height = vscrollbar.Value + Padding.Bottom;
 
             foreach (var c in Controls) {
+                if (IsInternalScrollControl (c))
+                    continue;
+
                 if (c.Dock == DockStyle.Right)
                     extra_width += c.Width;
                 else if (c.Dock == DockStyle.Bottom)
@@ -88,17 +94,23 @@ namespace Modern.Forms
             }
 
             foreach (var c in Controls) {
+                if (IsInternalScrollControl (c))
+                    continue;
+
                 switch (c.Dock) {
                     case DockStyle.Left:
                         width = Math.Max (width, c.Right + extra_width);
                         continue;
+
                     case DockStyle.Top:
                         height = Math.Max (height, c.Bottom + extra_height);
                         continue;
+
                     case DockStyle.Bottom:
                     case DockStyle.Right:
                     case DockStyle.Fill:
                         continue;
+
                     default:
                         var anchor = c.Anchor;
 
@@ -128,7 +140,6 @@ namespace Modern.Forms
                 if (vscrollbar.Visible)
                     rect.Width -= vscrollbar.Width;
 
-                // TODO: Scale padding?
                 return LayoutUtils.DeflateRect (rect, Padding);
             }
         }
@@ -173,7 +184,7 @@ namespace Modern.Forms
         private void Recalculate (bool doLayout)
         {
             var canvas = canvas_size;
-            var client = Bounds;
+            var client = ClientRectangle;
 
             canvas.Width += auto_scroll_margin.Width;
             canvas.Height += auto_scroll_margin.Height;
@@ -194,7 +205,7 @@ namespace Modern.Forms
 
                 if ((force_hscroll_visible || (canvas.Width > right_edge && auto_scroll)) && client.Width > 0) {
                     hscroll_visible = true;
-                    bottom_edge = client.Height - bar_size;// SystemInformation.HorizontalScrollBarHeight;
+                    bottom_edge = client.Height - bar_size;
                 } else {
                     hscroll_visible = false;
                     bottom_edge = client.Height;
@@ -202,26 +213,27 @@ namespace Modern.Forms
 
                 if ((force_vscroll_visible || (canvas.Height > bottom_edge && auto_scroll)) && client.Height > 0) {
                     vscroll_visible = true;
-                    right_edge = client.Width - bar_size;// SystemInformation.VerticalScrollBarWidth;
+                    right_edge = client.Width - bar_size;
                 } else {
                     vscroll_visible = false;
                     right_edge = client.Width;
                 }
-            } while (right_edge != prev_right_edge || bottom_edge != prev_bottom_edge);
+            }
+            while (right_edge != prev_right_edge || bottom_edge != prev_bottom_edge);
 
             right_edge = Math.Max (right_edge, 0);
             bottom_edge = Math.Max (bottom_edge, 0);
 
             if (!vscroll_visible)
                 vscrollbar.Value = 0;
+
             if (!hscroll_visible)
                 hscrollbar.Value = 0;
 
             if (hscroll_visible) {
                 hscrollbar.LargeChange = right_edge;
                 hscrollbar.SmallChange = 5;
-                hscrollbar.Maximum = canvas.Width - client.Width + bar_size;
-
+                hscrollbar.Maximum = Math.Max (0, canvas.Width - client.Width + bar_size);
             } else {
                 if (hscrollbar.Visible)
                     ScrollWindow (-scroll_position.X, 0);
@@ -232,26 +244,40 @@ namespace Modern.Forms
             if (vscroll_visible) {
                 vscrollbar.LargeChange = bottom_edge;
                 vscrollbar.SmallChange = 5;
-                vscrollbar.Maximum = canvas.Height - client.Height + bar_size;
-
+                vscrollbar.Maximum = Math.Max (0, canvas.Height - client.Height + bar_size);
             } else {
                 if (vscrollbar.Visible)
                     ScrollWindow (0, -scroll_position.Y);
 
-                scroll_position.X = 0;
+                scroll_position.Y = 0;
             }
 
             SuspendLayout ();
 
             var sizegrip_visible = hscroll_visible && vscroll_visible;
 
-            hscrollbar.SetBounds (0, client.Height - bar_size, sizegrip_visible ? Bounds.Width - bar_size : Bounds.Height, bar_size);
+            hscrollbar.SetBounds (
+                0,
+                client.Height - bar_size,
+                sizegrip_visible ? client.Width - bar_size : client.Width,
+                bar_size);
+
             hscrollbar.Visible = hscroll_visible;
 
-            vscrollbar.SetBounds (client.Width - bar_size, 0, bar_size, sizegrip_visible ? Bounds.Height - bar_size : Bounds.Height);
+            vscrollbar.SetBounds (
+                client.Width - bar_size,
+                0,
+                bar_size,
+                sizegrip_visible ? client.Height - bar_size : client.Height);
+
             vscrollbar.Visible = vscroll_visible;
 
-            sizegrip.SetBounds (client.Width - bar_size, client.Height - bar_size, bar_size, bar_size);
+            sizegrip.SetBounds (
+                client.Width - bar_size,
+                client.Height - bar_size,
+                bar_size,
+                bar_size);
+
             sizegrip.Visible = sizegrip_visible;
 
             ResumeLayout (doLayout);
@@ -270,8 +296,12 @@ namespace Modern.Forms
 
             SuspendLayout ();
 
-            foreach (var c in Controls)
+            foreach (var c in Controls) {
+                if (IsInternalScrollControl (c))
+                    continue;
+
                 c.Location = new Point (c.Left - xOffset, c.Top - yOffset);
+            }
 
             scroll_position.Offset (xOffset, yOffset);
 
