@@ -8,6 +8,8 @@ namespace Modern.Forms
     {
         public SKColor SelectedColor { get; private set; }
 
+        private readonly SKColor originalColor;
+
         private readonly ColorBox colorBox;
         private readonly HueSlider hueSlider;
 
@@ -32,9 +34,18 @@ namespace Modern.Forms
         private float saturation;
         private float value;
 
+        public string TextForm { get; set; } = "Select Color";
+        public string TextCurrent { get; set; } = "Current";
+        public string TextNew { get; set; } = "New";
+        public string TextValues { get; set; } = "Values";
+        public string TextButtonOk { get; set; } = "OK";
+        public string TextButtonCancel { get; set; } = "Cancel";
+
         public ColorDialogForm (SKColor initialColor)
         {
-            Text = "Select Color";
+            originalColor = initialColor;
+            SelectedColor = initialColor;
+            Text = TextForm;
             Size = new Size (760, 520);
             StartPosition = FormStartPosition.CenterParent;
             Resizeable = false;
@@ -45,61 +56,61 @@ namespace Modern.Forms
             ColorHelper.ToHsv (initialColor, out hue, out saturation, out value);
 
             colorBox = new ColorBox {
-                Location = new Point (20, 20),
+                Location = new Point (20, 40),
                 Size = new Size (320, 320)
             };
             colorBox.SetColorComponents (hue, saturation, value);
 
             hueSlider = new HueSlider {
-                Location = new Point (350, 20),
+                Location = new Point (350, 40),
                 Size = new Size (28, 320)
             };
             hueSlider.SetHueSilently (hue);
 
             var rightColumnX = 400;
 
-            var oldLabel = CreateCaptionLabel ("Current", rightColumnX, 20);
-            oldPreview = CreatePreviewPanel (rightColumnX, 42, initialColor);
+            var oldLabel = CreateCaptionLabel (TextCurrent, rightColumnX, 40);
+            oldPreview = CreatePreviewPanel (rightColumnX, 62, initialColor);
 
-            var newLabel = CreateCaptionLabel ("New", rightColumnX + 90, 20);
-            newPreview = CreatePreviewPanel (rightColumnX + 90, 42, initialColor);
+            var newLabel = CreateCaptionLabel (TextNew, rightColumnX + 90, 40);
+            newPreview = CreatePreviewPanel (rightColumnX + 90, 62, initialColor);
 
-            var valuesTitle = CreateCaptionLabel ("Values", rightColumnX, 110);
+            var valuesTitle = CreateCaptionLabel (TextValues, rightColumnX, 130);
             valuesTitle.Width = 220;
 
-            var argbLabel = CreateCaptionLabel ("ARGB:", rightColumnX, 140);
-            argbValueLabel = CreateValueLabel (rightColumnX + 55, 140, 260);
+            var argbLabel = CreateCaptionLabel ("ARGB:", rightColumnX, 160);
+            argbValueLabel = CreateValueLabel (rightColumnX + 55, 160, 260);
 
-            var hexLabel = CreateCaptionLabel ("Hex:", rightColumnX, 168);
-            hexValueLabel = CreateValueLabel (rightColumnX + 55, 168, 260);
+            var hexLabel = CreateCaptionLabel ("Hex:", rightColumnX, 188);
+            hexValueLabel = CreateValueLabel (rightColumnX + 55, 188, 260);
 
-            var hsvLabel = CreateCaptionLabel ("HSV:", rightColumnX, 196);
-            hsvValueLabel = CreateValueLabel (rightColumnX + 55, 196, 260);
+            var hsvLabel = CreateCaptionLabel ("HSV:", rightColumnX, 216);
+            hsvValueLabel = CreateValueLabel (rightColumnX + 55, 216, 260);
 
-            var hslLabel = CreateCaptionLabel ("HSL:", rightColumnX, 224);
-            hslValueLabel = CreateValueLabel (rightColumnX + 55, 224, 260);
+            var hslLabel = CreateCaptionLabel ("HSL:", rightColumnX, 244);
+            hslValueLabel = CreateValueLabel (rightColumnX + 55, 244, 260);
 
             var slidersTop = 360;
 
             aTrackBar = CreateChannelTrackBar (50, slidersTop);
-            rTrackBar = CreateChannelTrackBar (50, slidersTop + 32);
-            gTrackBar = CreateChannelTrackBar (50, slidersTop + 64);
-            bTrackBar = CreateChannelTrackBar (50, slidersTop + 96);
+            rTrackBar = CreateChannelTrackBar (50, slidersTop + 52);
+            gTrackBar = CreateChannelTrackBar (50, slidersTop + 84);
+            bTrackBar = CreateChannelTrackBar (50, slidersTop + 116);
 
-            Controls.Add (CreateCaptionLabel ("A", 20, slidersTop + 6));
-            Controls.Add (CreateCaptionLabel ("R", 20, slidersTop + 38));
-            Controls.Add (CreateCaptionLabel ("G", 20, slidersTop + 70));
-            Controls.Add (CreateCaptionLabel ("B", 20, slidersTop + 102));
+            Controls.Add (CreateCaptionLabel ("A", 20, slidersTop + 26));
+            Controls.Add (CreateCaptionLabel ("R", 20, slidersTop + 58));
+            Controls.Add (CreateCaptionLabel ("G", 20, slidersTop + 90));
+            Controls.Add (CreateCaptionLabel ("B", 20, slidersTop + 122));
 
             okButton = new Button {
-                Text = "OK",
-                Location = new Point (560, 440),
+                Text = TextButtonOk,
+                Location = new Point (560, 460),
                 Size = new Size (80, 30)
             };
 
             cancelButton = new Button {
-                Text = "Cancel",
-                Location = new Point (650, 440),
+                Text = TextButtonCancel,
+                Location = new Point (650, 460),
                 Size = new Size (80, 30)
             };
 
@@ -193,7 +204,14 @@ namespace Modern.Forms
             try {
                 SelectedColor = color;
 
-                ColorHelper.ToHsv (color, out hue, out saturation, out value);
+                ColorHelper.ToHsv (color, out float newHue, out float newSaturation, out float newValue);
+
+                
+                if (newSaturation > 0f && newValue > 0f)
+                    hue = newHue;
+
+                saturation = newSaturation;
+                value = newValue;
 
                 colorBox.SetColorComponents (hue, saturation, value);
                 hueSlider.SetHueSilently (hue);
@@ -204,7 +222,7 @@ namespace Modern.Forms
                 bTrackBar.Value = color.Blue;
 
                 if (updateOriginalPreview) {
-                    oldPreview.Style.BackgroundColor = color;
+                    oldPreview.Style.BackgroundColor = originalColor;
                     oldPreview.Invalidate ();
                 }
 

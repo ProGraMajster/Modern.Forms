@@ -13,43 +13,50 @@ namespace Modern.Forms.Renderers
                 return;
 
             var canvas = e.Canvas;
+            var rect = new SKRect (bounds.Left, bounds.Top, bounds.Right, bounds.Bottom);
 
-            using (var borderPaint = new SKPaint {
-                IsAntialias = true,
+            using var huePaint = new SKPaint { IsAntialias = false };
+            using var whitePaint = new SKPaint { IsAntialias = false };
+            using var blackPaint = new SKPaint { IsAntialias = false };
+            using var border = new SKPaint {
                 Style = SKPaintStyle.Stroke,
-                Color = Theme.BorderLowColor
-            })
-            using (var basePaint = new SKPaint { IsAntialias = false })
-            using (var whiteOverlayPaint = new SKPaint { IsAntialias = false })
-            using (var blackOverlayPaint = new SKPaint { IsAntialias = false }) {
-                var rect = ToRect (bounds);
+                Color = Theme.BorderLowColor,
+                IsAntialias = true
+            };
 
-                canvas.DrawRect (rect, borderPaint);
+            // base hue color
+            huePaint.Color = ColorHelper.FromHsv (control.Hue, 1f, 1f);
+            canvas.DrawRect (rect, huePaint);
 
-                var innerRect = new SKRect (rect.Left + 1, rect.Top + 1, rect.Right - 1, rect.Bottom - 1);
-                var hueColor = ColorHelper.FromHsv (control.Hue, 1f, 1f, 255);
+            // saturation gradient (white → transparent)
+            whitePaint.Shader = SKShader.CreateLinearGradient (
+                new SKPoint (rect.Left, rect.Top),
+                new SKPoint (rect.Right, rect.Top),
+                new[]
+                {
+            SKColors.White,
+            new SKColor(255,255,255,0)
+                },
+                null,
+                SKShaderTileMode.Clamp);
 
-                basePaint.Color = hueColor;
-                canvas.DrawRect (innerRect, basePaint);
+            canvas.DrawRect (rect, whitePaint);
 
-                whiteOverlayPaint.Shader = SKShader.CreateLinearGradient (
-                    new SKPoint (innerRect.Left, innerRect.Top),
-                    new SKPoint (innerRect.Right, innerRect.Top),
-                    new[] { SKColors.White, new SKColor (255, 255, 255, 0) },
-                    null,
-                    SKShaderTileMode.Clamp);
+            // value gradient (transparent → black)
+            blackPaint.Shader = SKShader.CreateLinearGradient (
+                new SKPoint (rect.Left, rect.Top),
+                new SKPoint (rect.Left, rect.Bottom),
+                new[]
+                {
+            new SKColor(0,0,0,0),
+            SKColors.Black
+                },
+                null,
+                SKShaderTileMode.Clamp);
 
-                canvas.DrawRect (innerRect, whiteOverlayPaint);
+            canvas.DrawRect (rect, blackPaint);
 
-                blackOverlayPaint.Shader = SKShader.CreateLinearGradient (
-                    new SKPoint (innerRect.Left, innerRect.Top),
-                    new SKPoint (innerRect.Left, innerRect.Bottom),
-                    new[] { new SKColor (0, 0, 0, 0), SKColors.Black },
-                    null,
-                    SKShaderTileMode.Clamp);
-
-                canvas.DrawRect (innerRect, blackOverlayPaint);
-            }
+            canvas.DrawRect (rect, border);
 
             DrawSelector (control, e, bounds);
         }

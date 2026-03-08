@@ -6,6 +6,7 @@ namespace Modern.Forms
 {
     /// <summary>
     /// Vertical hue selection slider.
+    /// Top = 0° (red), bottom = 360° (red again).
     /// </summary>
     public class HueSlider : Control
     {
@@ -95,10 +96,13 @@ namespace Modern.Forms
             float percent = (location.Y - bounds.Top) / (float)Math.Max (1, bounds.Height - 1);
             percent = ColorHelper.Clamp01 (percent);
 
-            hue = 360f - (percent * 360f);
-            if (hue >= 360f)
-                hue = 0f;
+            // Top = 0°, bottom approaches 360°.
+            float newHue = percent * 360f;
 
+            if (newHue >= 360f)
+                newHue = 359.999f;
+
+            hue = newHue;
             HueChanged?.Invoke (this, EventArgs.Empty);
             Invalidate ();
         }

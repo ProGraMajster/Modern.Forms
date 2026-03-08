@@ -25,13 +25,13 @@ namespace Modern.Forms.Renderers
                     new SKPoint (rect.Left, rect.Bottom),
                     new[]
                     {
-                        new SKColor(255, 0, 0),
-                        new SKColor(255, 255, 0),
-                        new SKColor(0, 255, 0),
-                        new SKColor(0, 255, 255),
-                        new SKColor(0, 0, 255),
-                        new SKColor(255, 0, 255),
-                        new SKColor(255, 0, 0)
+                        new SKColor(255, 0, 0),     // 0   red
+                        new SKColor(255, 255, 0),   // 60  yellow
+                        new SKColor(0, 255, 0),     // 120 green
+                        new SKColor(0, 255, 255),   // 180 cyan
+                        new SKColor(0, 0, 255),     // 240 blue
+                        new SKColor(255, 0, 255),   // 300 magenta
+                        new SKColor(255, 0, 0)      // 360 red
                     },
                     new[] { 0f, 1f / 6f, 2f / 6f, 3f / 6f, 4f / 6f, 5f / 6f, 1f },
                     SKShaderTileMode.Clamp);
@@ -57,26 +57,24 @@ namespace Modern.Forms.Renderers
 
         private void DrawMarker (HueSlider control, PaintEventArgs e, Rectangle bounds)
         {
-            float percent = 1f - (control.Hue / 360f);
-            if (control.Hue <= 0f)
-                percent = 1f;
-
+            // Top = 0°, bottom = 360°.
+            float percent = control.Hue / 360f;
             float y = bounds.Top + percent * System.Math.Max (1, bounds.Height - 1);
-
-            using var linePaint = new SKPaint {
-                IsAntialias = true,
-                Color = SKColors.White,
-                StrokeWidth = 2
-            };
 
             using var outlinePaint = new SKPaint {
                 IsAntialias = true,
                 Color = SKColors.Black,
-                StrokeWidth = 1
+                StrokeWidth = 3
             };
 
-            e.Canvas.DrawLine (bounds.Left - 2, y, bounds.Right + 2, y, outlinePaint);
-            e.Canvas.DrawLine (bounds.Left - 1, y, bounds.Right + 1, y, linePaint);
+            using var linePaint = new SKPaint {
+                IsAntialias = true,
+                Color = SKColors.White,
+                StrokeWidth = 1.5f
+            };
+
+            e.Canvas.DrawLine (bounds.Left - 3, y, bounds.Right + 3, y, outlinePaint);
+            e.Canvas.DrawLine (bounds.Left - 2, y, bounds.Right + 2, y, linePaint);
         }
     }
 }
