@@ -41,6 +41,8 @@ namespace Modern.Forms.Renderers
             SetRenderer<TrackBar> (new TrackBarRenderer ());
             SetRenderer<ColorBox> (new ColorBoxRenderer ());
             SetRenderer<HueSlider> (new HueSliderRenderer ());
+            SetRenderer<DateTimePicker> (new DateTimePickerRenderer ());
+            SetRenderer<DateTimePickerCalendar> (new DateTimePickerCalendarRenderer ());
         }
 
         /// <summary>

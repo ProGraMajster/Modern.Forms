@@ -14,11 +14,11 @@ namespace ControlGallery
 
         public MainForm ()
         {
+            Theme.UIFont = SKTypeface.FromFamilyName ("Segoe UI", SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
             tree = new TreeView {
                 Dock = DockStyle.Left,
                 ShowDropdownGlyph = false
             };
-
             tree.Style.Border.Width = 0;
             tree.Style.Border.Right.Width = 1;
 
@@ -54,6 +54,7 @@ namespace ControlGallery
             tree.Items.Add ("ToolBar", ImageLoader.Get ("button.png"));
             tree.Items.Add ("TreeView", ImageLoader.Get ("button.png"));
             tree.Items.Add("ColorDialog", ImageLoader.Get("button.png"));
+            tree.Items.Add("DateTimePicker" , ImageLoader.Get("button.png"));
 
             tree.ItemSelected += Tree_ItemSelected;
             Controls.Add (tree);
@@ -149,6 +150,8 @@ namespace ControlGallery
                     return new TreeViewPanel ();
                 case "ColorDialog":
                     return new ColorDialogPanel();
+                case "DateTimePicker":
+                    return new DateTimePickerPanel();
             }
 
             return null;
