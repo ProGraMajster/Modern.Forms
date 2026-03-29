@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using Modern.Forms.Renderers;
 using Modern.WindowKit.Input.Platform;
 using Topten.RichTextKit;
@@ -15,8 +14,8 @@ namespace Modern.Forms
 
         private bool is_highlighting;
         private int selection_anchor = -1;
-        private int scroll_x = 0;
-        private int scroll_y = 0;
+        private int scroll_x;
+        private int scroll_y;
 
         /// <summary>
         /// Initializes a new instance of the TextBox class.
@@ -322,7 +321,7 @@ namespace Modern.Forms
             var text = AsyncHelper.RunSync (() => Modern.WindowKit.AvaloniaGlobals.GetRequiredService<IClipboard> ().GetTextAsync ());
 
             if (!string.IsNullOrEmpty (text) && document.InsertText (text))
-                    ScrollToCaret ();
+                ScrollToCaret ();
         }
 
         /// <summary>
@@ -397,8 +396,8 @@ namespace Modern.Forms
         public override ControlStyle Style { get; } = new ControlStyle (DefaultStyle);
 
         /// <inheritdoc/>
-        public override string Text { 
-            get => document.Text; 
+        public override string Text {
+            get => document.Text;
             set {
                 if (document.Text != value) {
                     document.Text = value;

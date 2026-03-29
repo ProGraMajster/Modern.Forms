@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -172,7 +171,7 @@ public class TableLayoutPanel : Panel, IExtenderProvider
         return collection is not null && collection.Count > 0;
     }
 
-#region Extended Properties
+    #region Extended Properties
     bool IExtenderProvider.CanExtend (object obj)
     {
         return obj is Control control && control.Parent == this;
@@ -236,7 +235,7 @@ public class TableLayoutPanel : Panel, IExtenderProvider
     [DefaultValue (typeof (TableLayoutPanelCellPosition), "-1,-1")]  //if change this value, also change the SerializeViaAdd in TableLayoutControlCollectionCodeDomSerializer
 #endif
     [DesignerSerializationVisibility (DesignerSerializationVisibility.Hidden)]
-    [DisplayName ("Cell")]    public TableLayoutPanelCellPosition GetCellPosition (Control control) => _tableLayoutSettings.GetCellPosition (control);
+    [DisplayName ("Cell")] public TableLayoutPanelCellPosition GetCellPosition (Control control) => _tableLayoutSettings.GetCellPosition (control);
 
     /// <summary>
     ///  Sets the row and column position of the specified control.
@@ -280,7 +279,7 @@ public class TableLayoutPanel : Panel, IExtenderProvider
         var containerInfo = TableLayout.GetContainerInfo (this);
 
         if (containerInfo.Columns is null)
-            return Array.Empty<int> ();
+            return [];
 
         var cw = new int[containerInfo.Columns.Length];
 
@@ -300,7 +299,7 @@ public class TableLayoutPanel : Panel, IExtenderProvider
         var containerInfo = TableLayout.GetContainerInfo (this);
 
         if (containerInfo.Rows is null)
-            return Array.Empty<int> ();
+            return [];
 
         var rh = new int[containerInfo.Rows.Length];
 
@@ -309,9 +308,9 @@ public class TableLayoutPanel : Panel, IExtenderProvider
 
         return rh;
     }
-#endregion
+    #endregion
 
-#region PaintCode
+    #region PaintCode
     ///// <summary>
     ///// Raised when a cell needs to be painted.
     ///// </summary>
@@ -558,5 +557,5 @@ public class TableLayoutPanel : Panel, IExtenderProvider
             }
         }
     }
-#endregion
+    #endregion
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using Modern.Forms.Renderers;
 
 namespace Modern.Forms
@@ -11,12 +10,12 @@ namespace Modern.Forms
     {
         private int large_change = 10;
         private int maximum = 100;
-        private int minimum = 0;
-        private int current_value = 0;
+        private int minimum;
+        private int current_value;
         private int small_change = 1;
         private bool thumb_pressed;
-        private int thumbclick_offset;		        // Position of the last button-down event relative to the thumb edge
-        
+        private int thumbclick_offset;              // Position of the last button-down event relative to the thumb edge
+
         private readonly bool vertical;
 
         internal int thumb_drag_position;     // Current pixel of the midpoint of the thumb drag 
@@ -31,7 +30,7 @@ namespace Modern.Forms
         }
 
         /// <inheritdoc/>
-        public new static ControlStyle DefaultStyle = new ControlStyle (Control.DefaultStyle,
+        public new static readonly ControlStyle DefaultStyle = new ControlStyle (Control.DefaultStyle,
             (style) => style.BackgroundColor = Theme.ControlMidHighColor);
 
         /// <summary>
@@ -200,7 +199,7 @@ namespace Modern.Forms
         {
             base.OnMouseMove (e);
 
-            if (thumb_pressed == true) {
+            if (thumb_pressed) {
                 UpdateFromPoint ((vertical ? e.Y : e.X) - thumbclick_offset);
                 OnScroll (new ScrollEventArgs (ScrollEventType.ThumbTrack, Value));
             }
@@ -278,7 +277,7 @@ namespace Modern.Forms
             pixel = Math.Max (pixel, vertical ? effective_track_bounds.Top : effective_track_bounds.Left);
             pixel = Math.Min (pixel, vertical ? effective_track_bounds.Bottom : effective_track_bounds.Right);
 
-            var position_percent = 
+            var position_percent =
                 vertical ? (double)(pixel - effective_track_bounds.Top) / effective_track_bounds.Height
                          : (double)(pixel - effective_track_bounds.Left) / effective_track_bounds.Width;
 
@@ -304,7 +303,8 @@ namespace Modern.Forms
             value = Math.Max (value, minimum);
             value = Math.Min (value, maximum);
 
-            var value_percent = (double)(value - minimum) / (PossibleValuesCount - 1);
+            var possible = PossibleValuesCount - 1;
+            var value_percent = possible > 0 ? (double)(value - minimum) / possible : 0d;
 
             var effective_track_bounds = GetEffectiveTrackBounds ();
 

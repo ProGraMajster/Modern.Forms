@@ -1,12 +1,10 @@
-﻿using System;
-using System.Drawing;
-using System.Linq;
+﻿using System.Drawing;
 using SkiaSharp;
 using Topten.RichTextKit;
 
 namespace Modern.Forms
 {
-    class TextBoxDocument
+    internal sealed class TextBoxDocument
     {
         private readonly TextBox textbox;
 
@@ -14,14 +12,14 @@ namespace Modern.Forms
         private string placeholder = string.Empty;
 
         private TextBlock? cached_text_block;
-        
+
         private bool enabled = true;
-        private int cursor_index = 0;
-        private bool read_only = false;
+        private int cursor_index;
+        private bool read_only;
         private int selection_start = -1;
         private int selection_end = -1;
         private int max_length = int.MaxValue;
-        private bool multiline = false;
+        private bool multiline;
         private char? password_char;
         private int width = -1;
         private SKTypeface font = Theme.UIFont;
@@ -29,7 +27,7 @@ namespace Modern.Forms
         private SKColor placeholder_font_color = Theme.ForegroundDisabledColor;
         private SKColor selection_color = new SKColor (153, 201, 239);
 
-        private static readonly string[] invalid_singleline_characters = new[] { "\r", "\n" };
+        private static readonly string[] invalid_singleline_characters = ["\r", "\n"];
 
         internal TextBoxDocument (TextBox textbox)
         {
@@ -108,7 +106,7 @@ namespace Modern.Forms
         }
 
         public string DisplayText => text.Length == 0 ? placeholder :
-                                     password_char.HasValue ? new string (password_char.Value, text.Length) : 
+                                     password_char.HasValue ? new string (password_char.Value, text.Length) :
                                      text;
 
         public bool Enabled {
@@ -149,7 +147,7 @@ namespace Modern.Forms
 
             var max_size = multiline ? new Size (width, int.MaxValue) : TextMeasurer.MaxSize;
             var color = !Enabled ? Theme.ForegroundDisabledColor :
-                        Text.HasValue () ? textbox.CurrentStyle.GetForegroundColor () : 
+                        Text.HasValue () ? textbox.CurrentStyle.GetForegroundColor () :
                                 placeholder_font_color;
 
             return cached_text_block = TextMeasurer.CreateTextBlock (DisplayText, font, textbox.CurrentFontSize, max_size, alignment, color, MaxLines);
@@ -210,13 +208,13 @@ namespace Modern.Forms
             var new_index = -1;
             var block = GetTextBlock ();
             var current_caret = block.GetCaretInfo (new CaretPosition (cursor_index));
-            
+
             switch (direction) {
                 case ArrowDirection.Left:
 
                     // Ctrl-Home - Go to the beginning of the document
                     if (end && wholeWord)
-                        new_index = block.CaretIndicies.First ();
+                        new_index = block.CaretIndicies[0];
                     // Home - Go to the beginning of the current line
                     else if (end)
                         new_index = block.HitTest (0, current_caret.CaretRectangle.MidY).ClosestCodePointIndex;

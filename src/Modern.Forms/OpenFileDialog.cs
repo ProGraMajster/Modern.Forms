@@ -1,10 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Modern.WindowKit.Controls.Platform;
-using Modern.WindowKit.Platform.Storage.FileIO;
-using Modern.WindowKit.Platform.Storage;
+﻿using Modern.WindowKit.Platform.Storage;
 
 namespace Modern.Forms
 {
@@ -32,7 +26,7 @@ namespace Modern.Forms
                     FileTypeFilter = filters
                 };
 
-                var result = await parent.OpenFilePickerAsync (options);
+                var result = await parent.OpenFilePickerAsync (options).ConfigureAwait (false);
 
                 FileNames.Clear ();
 
@@ -43,7 +37,7 @@ namespace Modern.Forms
 
                 return FileNames.Count > 0 ? DialogResult.OK : DialogResult.Cancel;
             }
-            
+
             throw new ArgumentException ("Owner does not support system dialogs.");
         }
     }

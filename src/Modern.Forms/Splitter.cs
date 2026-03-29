@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using Modern.Forms.Renderers;
 
 namespace Modern.Forms
@@ -22,7 +21,7 @@ namespace Modern.Forms
             Dock = DockStyle.Left;
             Cursor = Cursors.SizeWestEast;
         }
-        
+
         /// <inheritdoc/>
         public new static ControlStyle DefaultStyle = new ControlStyle (Control.DefaultStyle);
 

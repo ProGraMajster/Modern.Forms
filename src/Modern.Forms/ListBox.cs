@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using Modern.Forms.Renderers;
@@ -15,7 +13,7 @@ namespace Modern.Forms
         private int item_height = -1;
         private SelectionMode selection_mode = SelectionMode.One;
         private bool scrollbar_always_visible;
-        private int top_index = 0;
+        private int top_index;
         private readonly VerticalScrollBar vscrollbar;
 
         /// <summary>
@@ -48,7 +46,7 @@ namespace Modern.Forms
         protected override Size DefaultSize => new Size (120, 96);
 
         /// <inheritdoc/>
-        public new static ControlStyle DefaultStyle = new ControlStyle (Control.DefaultStyle,
+        public new static readonly ControlStyle DefaultStyle = new ControlStyle (Control.DefaultStyle,
             (style) => {
                 style.BackgroundColor = Theme.ControlLowColor;
                 style.Border.Width = 1;
@@ -69,6 +67,7 @@ namespace Modern.Forms
         /// <summary>
         /// Finds the index of the next item after startIndex that begins with the specified string. This search is case-insensitive.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Globalization", "CA1309:Use ordinal string comparison", Justification = "This should be culture aware.")]
         public int FindString (string s, int startIndex = -1)
         {
             if (s is null || Items.Count == 0)
@@ -132,7 +131,7 @@ namespace Modern.Forms
         public Rectangle GetItemRectangle (int index)
         {
             if (index < 0 || index >= Items.Count)
-                throw new ArgumentOutOfRangeException ("Index out of range.");
+                throw new ArgumentOutOfRangeException (nameof (index), "Index out of range.");
 
             var client = ClientRectangle;
 
@@ -154,7 +153,7 @@ namespace Modern.Forms
             }
             set {
                 if (value > 255)
-                    throw new ArgumentOutOfRangeException ("The ItemHeight property was set beyond 255 pixels");
+                    throw new ArgumentOutOfRangeException (nameof (value), "The ItemHeight property was set beyond 255 pixels");
 
                 item_height = value;
 
@@ -472,7 +471,7 @@ namespace Modern.Forms
         public SelectionMode SelectionMode {
             get => selection_mode;
             set {
-                if (!Enum.IsDefined (typeof (SelectionMode), value))
+                if (!Enum.IsDefined (value))
                     throw new InvalidEnumArgumentException ($"Enum argument value '{value}' is not valid for SelectionMode");
 
                 if (selection_mode == value)

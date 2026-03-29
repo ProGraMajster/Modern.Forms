@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
 namespace Modern.Forms
 {
@@ -9,7 +8,7 @@ namespace Modern.Forms
     public class TabStripItemCollection : Collection<TabStripItem>
     {
         private readonly TabStrip owner;
-        private int focused_index = 0;
+        private int focused_index;
         private int hovered_index = -1;
         private int selected_index = -1;
 
@@ -86,7 +85,7 @@ namespace Modern.Forms
                 // we still want to force it to be treated like a new selection.
                 selected_index = -1;
                 owner.SelectedIndex = Math.Max (index - 1, 0);
-            } 
+            }
 
             if (selected_tab is null && Count > 0)
                 owner.SelectedIndex = 0;
@@ -101,7 +100,7 @@ namespace Modern.Forms
             get => selected_index;
             set {
                 if (value < -1 || value >= Count)
-                    throw new ArgumentOutOfRangeException ("Index out of range");
+                    throw new ArgumentOutOfRangeException (nameof (value), "Index out of range");
 
                 if (selected_index != value) {
                     selected_index = value;

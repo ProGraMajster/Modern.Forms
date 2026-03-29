@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace Modern.Forms.Renderers
 {
@@ -38,7 +37,7 @@ namespace Modern.Forms.Renderers
                 var highlight_padding = e.LogicalToDeviceUnits (10);
                 var highlight_height = e.LogicalToDeviceUnits (3);
                 var highlight_bounds = new Rectangle (item.Bounds.Left + highlight_padding, item.Bounds.Bottom - highlight_height, item.Bounds.Width - (2 * highlight_padding), highlight_height);
-                
+
                 e.Canvas.FillRectangle (highlight_bounds, Theme.AccentColor2);
             }
         }

@@ -13,7 +13,7 @@ internal partial class FlowLayout
     ///  so that the same code path used for horizontal flow can be applied to
     ///  vertical flow.
     /// </summary>
-    private class VerticalElementProxy : ElementProxy
+    private sealed class VerticalElementProxy : ElementProxy
     {
         public override AnchorStyles AnchorStyles {
             get {
@@ -21,7 +21,7 @@ internal partial class FlowLayout
                 var isStretch = (anchorStyles & LayoutUtils.HorizontalAnchorStyles) == LayoutUtils.HorizontalAnchorStyles; //whether the control stretches to fill in the whole space
                 var isLeft = (anchorStyles & AnchorStyles.Left) != 0;  //whether the control anchors to left and does not stretch;
                 var isRight = (anchorStyles & AnchorStyles.Right) != 0; //whether the control anchors to right and does not stretch;
-                
+
                 if (isStretch)
                     return LayoutUtils.VerticalAnchorStyles;
 

@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
 using Modern.Forms.Layout;
 using SkiaSharp;
 
@@ -368,7 +366,7 @@ namespace Modern.Forms
         /// <summary>
         /// Gets the default style for all controls of this type.
         /// </summary>
-        public static ControlStyle DefaultStyle = new ControlStyle (null,
+        public static readonly ControlStyle DefaultStyle = new ControlStyle (null,
             (style) => {
                 style.ForegroundColor = Theme.ForegroundColor;
                 style.BackgroundColor = Theme.BackgroundColor;
@@ -382,7 +380,7 @@ namespace Modern.Forms
         /// <summary>
         /// Gets the default style for all controls of this type when the user is hovering over it.
         /// </summary>
-        public static ControlStyle DefaultStyleHover = new ControlStyle (DefaultStyle);
+        public static readonly ControlStyle DefaultStyleHover = new ControlStyle (DefaultStyle);
 
         /// <summary>
         /// Removes focus from the control.
@@ -1274,9 +1272,6 @@ namespace Modern.Forms
                 if (value == this)
                     throw new ArgumentException ("Control cannot be its own Parent.");
 
-                if (parent == value)
-                    return;
-
                 if (value == null) {
                     parent?.Controls.Remove (this);
                     parent = null;
@@ -1302,7 +1297,7 @@ namespace Modern.Forms
                     return point;
 
                 var window_location = window.Location;
-                
+
                 // For Mac, the desktop coordinates are measured at a different scale than
                 // our form coordinates, so we need to fix that. For other platforms, ratio is 1.
                 var desktop_ratio = window.DesktopScaling / window.Scaling;
@@ -1500,7 +1495,7 @@ namespace Modern.Forms
             current_mouse_in = child;
 
             if (child != null)
-                child?.RaiseMouseMove (TranslateMouseEvents (e, child));
+                child.RaiseMouseMove (TranslateMouseEvents (e, child));
             else if (Enabled)
                 OnMouseMove (e);
         }
@@ -1913,7 +1908,7 @@ namespace Modern.Forms
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool disposedValue; // To detect redundant calls
 
         /// <summary>
         /// Disposes unmanaged resources used by the control.

@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Diagnostics;
@@ -610,7 +608,7 @@ public partial class Control
 
         var newLocation = _x != x || _y != y;
         var newSize = Width != width || Height != height;// ||
-                                                          //_clientWidth != clientWidth || _clientHeight != clientHeight;
+                                                         //_clientWidth != clientWidth || _clientHeight != clientHeight;
 
         _x = x;
         _y = y;

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace Modern.Forms.Renderers
 {
@@ -70,7 +69,7 @@ namespace Modern.Forms.Renderers
             var final_image_bounds = DrawingExtensions.CenterSquare (image_area_bounds, e.LogicalToDeviceUnits (IMAGE_SIZE));
 
             if (item.Image != null)
-                    canvas.DrawBitmap (item.Image, final_image_bounds, !item.Enabled);
+                canvas.DrawBitmap (item.Image, final_image_bounds, !item.Enabled);
 
             if (!string.IsNullOrWhiteSpace (item.Text)) {
                 var font_size = e.LogicalToDeviceUnits (Theme.ItemFontSize);

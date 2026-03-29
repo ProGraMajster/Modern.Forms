@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Linq;
+﻿using System.Drawing;
 using Modern.Forms.Renderers;
 
 namespace Modern.Forms
@@ -26,7 +24,7 @@ namespace Modern.Forms
         protected override Size DefaultSize => new Size (450, 450);
 
         /// <inheritdoc/>
-        public new static ControlStyle DefaultStyle = new ControlStyle (Control.DefaultStyle, 
+        public new static ControlStyle DefaultStyle = new ControlStyle (Control.DefaultStyle,
             (style) => style.BackgroundColor = Theme.ControlLowColor);
 
         /// <summary>

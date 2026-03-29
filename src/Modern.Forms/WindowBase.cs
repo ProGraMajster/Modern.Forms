@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.ComponentModel;
 using Modern.WindowKit;
 using Modern.WindowKit.Controls;
 using Modern.WindowKit.Controls.Platform.Surfaces;
@@ -72,7 +70,7 @@ namespace Modern.Forms
         /// <summary>
         /// Closes and destroys the window.
         /// </summary>
-        public virtual void Close () 
+        public virtual void Close ()
         {
             // If we just Dispose the window, WM_CLOSE will never get called so OnClosing will not get called
             if (this is Form f) {
@@ -85,8 +83,8 @@ namespace Modern.Forms
 
                 Application.OpenForms.Remove (f);
             }
-            
-            window.Dispose (); 
+
+            window.Dispose ();
         }
 
         /// <summary>
@@ -145,7 +143,7 @@ namespace Modern.Forms
         {
             Visible = false;
             window.Hide ();
-            
+
             if (Application.ActivePopupWindow == this)
                 Application.ActivePopupWindow = null;
 

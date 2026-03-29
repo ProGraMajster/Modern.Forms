@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.Collections;
 
 namespace Modern.Forms;
@@ -11,8 +10,9 @@ namespace Modern.Forms;
 ///  This is a read only collection of Forms exposed as a static property of the
 ///  Application class. This is used to store all the currently loaded forms in an app.
 /// </summary>
-public class FormCollection : ReadOnlyCollectionBase
+public class FormCollection : IReadOnlyCollection<Form>
 {
+    private readonly List<Form> inner_list = [];
     internal static object CollectionSyncRoot = new object ();
 
     /// <summary>
@@ -23,10 +23,9 @@ public class FormCollection : ReadOnlyCollectionBase
         get {
             if (name is not null) {
                 lock (CollectionSyncRoot) {
-                    foreach (Form form in InnerList) {
-                        if (string.Equals (form.Name, name, StringComparison.OrdinalIgnoreCase)) {
+                    foreach (var form in inner_list) {
+                        if (string.Equals (form.Name, name, StringComparison.OrdinalIgnoreCase))
                             return form;
-                        }
                     }
                 }
             }
@@ -42,11 +41,20 @@ public class FormCollection : ReadOnlyCollectionBase
         get {
             Form? f = null;
 
-            lock (CollectionSyncRoot) {
-                f = (Form?)InnerList[index];
-            }
+            lock (CollectionSyncRoot)
+                f = inner_list[index];
 
             return f;
+        }
+    }
+
+    /// <summary>
+    /// Gets the number of elements contained in the collection.
+    /// </summary>
+    public int Count {
+        get {
+            lock (CollectionSyncRoot)
+                return inner_list.Count;
         }
     }
 
@@ -56,8 +64,8 @@ public class FormCollection : ReadOnlyCollectionBase
     internal void Add (Form form)
     {
         lock (CollectionSyncRoot) {
-            if (!InnerList.Contains (form))
-                InnerList.Add (form);
+            if (!inner_list.Contains (form))
+                inner_list.Add (form);
         }
     }
 
@@ -66,12 +74,25 @@ public class FormCollection : ReadOnlyCollectionBase
     /// </summary>
     internal bool Contains (Form form)
     {
-        bool inCollection = false;
-        lock (CollectionSyncRoot) {
-            inCollection = InnerList.Contains (form);
-        }
+        var inCollection = false;
+
+        lock (CollectionSyncRoot)
+            inCollection = inner_list.Contains (form);
 
         return inCollection;
+    }
+
+    /// <summary>
+    /// Returns an enumerator that iterates through the collection of forms.
+    /// </summary>
+    public IEnumerator<Form> GetEnumerator ()
+    {
+        Form[] snapshot;
+
+        lock (CollectionSyncRoot)
+            snapshot = inner_list.ToArray ();
+
+        return ((IEnumerable<Form>)snapshot).GetEnumerator ();
     }
 
     /// <summary>
@@ -79,8 +100,9 @@ public class FormCollection : ReadOnlyCollectionBase
     /// </summary>
     internal void Remove (Form form)
     {
-        lock (CollectionSyncRoot) {
-            InnerList.Remove (form);
-        }
+        lock (CollectionSyncRoot)
+            inner_list.Remove (form);
     }
+
+    IEnumerator IEnumerable.GetEnumerator () => GetEnumerator ();
 }

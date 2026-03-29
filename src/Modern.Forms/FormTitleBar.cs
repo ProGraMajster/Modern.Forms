@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using Modern.Forms.Renderers;
 using SkiaSharp;
 
@@ -206,9 +205,9 @@ namespace Modern.Forms
                 : TitleBarButton.TitleBarButtonGlyph.Maximize;
         }
 
-        internal class TitleBarButton : Button
+        internal sealed class TitleBarButton : Button
         {
-            protected const int BUTTON_PADDING = 10;
+            private const int BUTTON_PADDING = 10;
 
             private TitleBarButtonGlyph glyph;
 
